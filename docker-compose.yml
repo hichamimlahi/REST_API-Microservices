@@ -59,6 +59,13 @@ services:
       - /app/node_modules
     depends_on:
       - rabbitmq
+  frontend:
+    image: nginx:alpine
+    container_name: frontend-service
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
 
 volumes:
   mongo_data:
