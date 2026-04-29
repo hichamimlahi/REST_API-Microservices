@@ -15,8 +15,8 @@ async function connectQueue() {
             if (msg !== null) {
                 const messageContent = JSON.parse(msg.content.toString());
                 console.log(`[x] Nouvelle notification reçue :`);
-                console.log(`    Destinataire : ${messageContent.email_patient}`);
-                console.log(`    Message : Votre ordonnance ${messageContent.ordonance_id} a été créée avec succès.`);
+                console.log(`    Destinataire : ${messageContent.nom_patient} (${messageContent.email_patient})`);
+                console.log(`    Message : Votre ordonnance ${messageContent.numero_ordonnance} a été créée avec succès.`);
                 console.log(`    Prix Total : ${messageContent.prix_total} €`);
                 
                 // Simuler un envoi d'email

@@ -7,7 +7,7 @@ const Personnel = require("./Personnel");
 app.use(express.json());
 
 mongoose.set('strictQuery', true);
-mongoose.connect("mongodb://db/personnel-service")
+mongoose.connect("mongodb://db:27017/db_personnel")
     .then(() => {
         console.log(`Personnel-Service DB Connected`);
     })
@@ -16,11 +16,16 @@ mongoose.connect("mongodb://db/personnel-service")
     });
 
 app.post("/personnel/ajouter", (req, res, next) => {
-    const { nom, role, salaire } = req.body;
+    const { matricule, nom, prenom, poste, telephone, salaire_mensuel, date_embauche, est_actif } = req.body;
     const newPersonnel = new Personnel({
+        matricule,
         nom,
-        role,
-        salaire
+        prenom,
+        poste,
+        telephone,
+        salaire_mensuel,
+        date_embauche,
+        est_actif
     });
 
     newPersonnel.save()

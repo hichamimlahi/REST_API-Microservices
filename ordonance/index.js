@@ -24,7 +24,7 @@ async function connectQueue() {
 connectQueue();
 
 mongoose.set('strictQuery', true);
-mongoose.connect("mongodb://db/ordonance-service")
+mongoose.connect("mongodb://db:27017/db_ordonnance")
     .then(() => {
         console.log(`Ordonance-Service DB Connected`);
     })
@@ -32,45 +32,58 @@ mongoose.connect("mongodb://db/ordonance-service")
         console.error(err);
     });
 
-function prixTotal(medicaments) {
+function prixTotal(medicamentsDb, medicaments_prescrits) {
     let total = 0;
-    for (let t = 0; t < medicaments.length; ++t){
-        total += medicaments[t].prix;
+    for (let i = 0; i < medicamentsDb.length; ++i) {
+        const medDb = medicamentsDb[i];
+        // Trouver la quantité demandée pour ce médicament
+        const medPrescrit = medicaments_prescrits.find(m => m.nom_medicament === medDb.nom_commercial);
+        if (medPrescrit) {
+            total += medDb.prix_unitaire * medPrescrit.quantite;
+        }
     }
-    console.log("prix total : " + total);
+    console.log("prix total calculé : " + total);
     return total;
 }
 
-async function httpRequest(ids){
-    try{
+async function httpRequest(medicaments_prescrits) {
+    try {
+        const noms_commerciaux = medicaments_prescrits.map(m => m.nom_medicament);
         const URL = "http://medicament:4000/medicament/acheter";
-        const response = await axios.post(URL, { ids: ids}, {
+        const response = await axios.post(URL, { noms_commerciaux: noms_commerciaux }, {
             headers: {
                 'Content-Type': 'application/json'
             }
         });
 
-        return prixTotal(response.data);
-    } catch(error){
+        return prixTotal(response.data, medicaments_prescrits);
+    } catch(error) {
         console.error(error);
         return 0;
     }
 }
 
 app.post("/ordonance/ajouter", isAuthenticated, async (req, res, next) => {
-    const { ids } = req.body;
-    httpRequest(req.body.ids).then(total => {
+    const { numero_ordonnance, nom_patient, email_patient, nom_medecin, statut, medicaments_prescrits } = req.body;
+    
+    httpRequest(medicaments_prescrits).then(total => {
         const newOrdonance = new Ordonance({
-            medicaments: ids,
-            email_patient: req.user.email,
+            numero_ordonnance,
+            nom_patient,
+            email_patient,
+            nom_medecin,
+            statut,
+            medicaments_prescrits,
             prix_total: total
         });
+        
         newOrdonance.save()
             .then(ordonance => {
                 if (channel) {
                     const message = {
+                        numero_ordonnance: ordonance.numero_ordonnance,
+                        nom_patient: ordonance.nom_patient,
                         email_patient: ordonance.email_patient,
-                        ordonance_id: ordonance._id,
                         prix_total: ordonance.prix_total
                     };
                     channel.sendToQueue('notifications', Buffer.from(JSON.stringify(message)));

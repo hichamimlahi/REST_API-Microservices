@@ -7,7 +7,7 @@ const Medicament = require("./Medicament");
 app.use(express.json());
 
 mongoose.set('strictQuery', true);
-mongoose.connect("mongodb://db/medicament-service")
+mongoose.connect("mongodb://db:27017/db_medicament")
     .then(() => {
         console.log(`Medicament-Service DB Connected`);
     })
@@ -16,12 +16,16 @@ mongoose.connect("mongodb://db/medicament-service")
     });
 
 app.post("/medicament/ajouter", (req, res, next) => {
-    const { nom, description, prix, stock } = req.body;
+    const { nom_commercial, molecule_active, categorie, prix_unitaire, quantite_stock, fournisseur, date_expiration, sur_ordonnance } = req.body;
     const newMedicament = new Medicament({
-        nom,
-        description,
-        prix,
-        stock
+        nom_commercial,
+        molecule_active,
+        categorie,
+        prix_unitaire,
+        quantite_stock,
+        fournisseur,
+        date_expiration,
+        sur_ordonnance
     });
 
     newMedicament.save()
@@ -30,8 +34,8 @@ app.post("/medicament/ajouter", (req, res, next) => {
 });
 
 app.post('/medicament/acheter', (req, res, next) => {
-    const {ids} = req.body;
-    Medicament.find({_id: {$in: ids} })
+    const { noms_commerciaux } = req.body;
+    Medicament.find({nom_commercial: {$in: noms_commerciaux} })
         .then(medicaments => res.status(201).json(medicaments))
         .catch(error => res.status(400).json({ error: error.message || error }));
 });
