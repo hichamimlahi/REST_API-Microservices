@@ -1,9 +1,11 @@
 const express = require("express");
+const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT_ONE || 4000;
 const mongoose = require("mongoose");
 const Medicament = require("./Medicament");
 
+app.use(cors());
 app.use(express.json());
 
 mongoose.set('strictQuery', true);
@@ -30,6 +32,12 @@ app.post("/medicament/ajouter", (req, res, next) => {
 
     newMedicament.save()
         .then(medicament => res.status(201).json(medicament))
+        .catch(error => res.status(400).json({ error: error.message || error }));
+});
+
+app.get('/medicament/liste', (req, res, next) => {
+    Medicament.find()
+        .then(medicaments => res.status(200).json(medicaments))
         .catch(error => res.status(400).json({ error: error.message || error }));
 });
 

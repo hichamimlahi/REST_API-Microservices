@@ -1,513 +1,375 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PharmaManage - Tableau de Bord</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-blue: #2563eb;
-            --primary-dark: #1e40af;
-            --sea-green: #2dd4bf;
-            --sea-green-dark: #0f766e;
-            --bg-color: #f8fafc;
-            --white: #ffffff;
-            --text-main: #334155;
-            --text-light: #64748b;
-            --border-color: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-        }
-
-        /* --- Login Screen --- */
-        #login-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, var(--primary-blue), var(--sea-green));
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .login-box {
-            background: var(--white);
-            padding: 3rem;
-            border-radius: 1rem;
-            box-shadow: var(--shadow);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .login-box h1 {
-            color: var(--primary-dark);
-            margin-bottom: 0.5rem;
-            font-size: 1.5rem;
-        }
-
-        .login-box p {
-            color: var(--text-light);
-            margin-bottom: 2rem;
-            font-size: 0.875rem;
-        }
-
-        .input-group {
-            margin-bottom: 1.5rem;
-            text-align: left;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            font-size: 0.875rem;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .input-group input:focus {
-            border-color: var(--sea-green);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 0.75rem;
-            background-color: var(--primary-blue);
-            color: white;
-            border: none;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .btn:hover {
-            background-color: var(--primary-dark);
-        }
-
-        .btn-sea {
-            background-color: var(--sea-green);
-            width: auto;
-            padding: 0.5rem 1rem;
-        }
-
-        .btn-sea:hover {
-            background-color: var(--sea-green-dark);
-        }
-
-        /* --- Dashboard Layout --- */
-        #dashboard {
-            display: none;
-            width: 100%;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            background: var(--white);
-            border-right: 1px solid var(--border-color);
-            height: 100vh;
-            position: fixed;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sidebar-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            text-align: center;
-        }
-
-        .sidebar-header h2 {
-            color: var(--sea-green-dark);
-            font-size: 1.25rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .nav-menu {
-            list-style: none;
-            padding: 1rem 0;
-            flex-grow: 1;
-        }
-
-        .nav-item {
-            padding: 0.75rem 1.5rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            color: var(--text-light);
-            transition: all 0.2s;
-            border-left: 3px solid transparent;
-        }
-
-        .nav-item:hover, .nav-item.active {
-            background-color: #f1f5f9;
-            color: var(--primary-blue);
-            border-left-color: var(--primary-blue);
-            font-weight: 500;
-        }
-
-        .logout-btn {
-            padding: 1rem 1.5rem;
-            border-top: 1px solid var(--border-color);
-            color: #ef4444;
-            cursor: pointer;
-            transition: background 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        
-        .logout-btn:hover { background: #fef2f2; }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 250px;
-            flex-grow: 1;
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .header h2 {
-            font-size: 1.75rem;
-            color: var(--primary-dark);
-        }
-
-        .section-view {
-            display: none;
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: var(--shadow);
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        .section-view.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Tables */
-        .table-container {
-            overflow-x: auto;
-            margin-top: 1rem;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        th {
-            background-color: #f8fafc;
-            color: var(--text-light);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.05em;
-        }
-
-        tr:hover {
-            background-color: #f1f5f9;
-        }
-
-        .badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .badge.success { background: #dcfce7; color: #166534; }
-        .badge.warning { background: #fef9c3; color: #854d0e; }
-        
-        .action-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); z-index: 100; transition: transform 0.3s;}
-            .sidebar.open { transform: translateX(0); }
-            .main-content { margin-left: 0; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PharmaManage - Tableau de Bord</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#2563eb;--blue-dark:#1e40af;--green:#2dd4bf;--green-dark:#0f766e;--bg:#f8fafc;--white:#fff;--text:#334155;--muted:#64748b;--border:#e2e8f0;--shadow:0 4px 6px -1px rgb(0 0 0/.1)}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+body{background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+#login-screen{position:fixed;inset:0;background:linear-gradient(135deg,var(--blue),var(--green));display:flex;justify-content:center;align-items:center;z-index:1000;transition:opacity .3s}
+.login-box{background:var(--white);padding:2.5rem;border-radius:1rem;box-shadow:var(--shadow);width:100%;max-width:380px;text-align:center}
+.login-box h1{color:var(--blue-dark);font-size:1.5rem;margin-bottom:.25rem}
+.login-box p{color:var(--muted);font-size:.875rem;margin-bottom:1.5rem}
+.field{margin-bottom:1rem;text-align:left}
+.field label{display:block;font-size:.875rem;font-weight:500;margin-bottom:.4rem}
+.field input,.field select{width:100%;padding:.7rem;border:1px solid var(--border);border-radius:.5rem;outline:none;font-size:.9rem}
+.field input:focus,.field select:focus{border-color:var(--green)}
+.btn{padding:.7rem 1.2rem;background:var(--blue);color:#fff;border:none;border-radius:.5rem;font-weight:600;cursor:pointer;transition:background .2s}
+.btn:hover{background:var(--blue-dark)}
+.btn-green{background:var(--green)}.btn-green:hover{background:var(--green-dark)}
+.btn-full{width:100%}
+.btn-sm{padding:.4rem .9rem;font-size:.85rem}
+#dashboard{display:none;width:100%}
+.sidebar{width:240px;background:var(--white);border-right:1px solid var(--border);height:100vh;position:fixed;display:flex;flex-direction:column}
+.sidebar-logo{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);font-size:1.1rem;font-weight:700;color:var(--green-dark)}
+.nav-menu{list-style:none;padding:.75rem 0;flex-grow:1}
+.nav-item{padding:.7rem 1.5rem;cursor:pointer;display:flex;align-items:center;gap:.6rem;color:var(--muted);transition:all .2s;border-left:3px solid transparent;font-size:.95rem}
+.nav-item:hover,.nav-item.active{background:#f1f5f9;color:var(--blue);border-left-color:var(--blue);font-weight:500}
+.logout{padding:1rem 1.5rem;border-top:1px solid var(--border);color:#ef4444;cursor:pointer;display:flex;align-items:center;gap:.6rem}
+.logout:hover{background:#fef2f2}
+.main{margin-left:240px;flex-grow:1;padding:2rem;display:flex;flex-direction:column}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}
+.top-bar h2{font-size:1.6rem;color:var(--blue-dark)}
+.section{display:none;background:var(--white);padding:1.5rem;border-radius:.75rem;box-shadow:var(--shadow);animation:fadeIn .3s}
+.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.action-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.action-bar h3{font-size:1.1rem;font-weight:600}
+table{width:100%;border-collapse:collapse}
+th,td{padding:.9rem 1rem;text-align:left;border-bottom:1px solid var(--border);font-size:.875rem}
+th{background:#f8fafc;color:var(--muted);font-weight:600;text-transform:uppercase;font-size:.75rem;letter-spacing:.04em}
+tr:hover{background:#f1f5f9}
+.badge{padding:.2rem .65rem;border-radius:9999px;font-size:.75rem;font-weight:500}
+.badge-ok{background:#dcfce7;color:#166534}
+.badge-warn{background:#fef9c3;color:#854d0e}
+.badge-red{background:#fee2e2;color:#991b1b}
+.empty{padding:2rem;text-align:center;color:var(--muted);font-style:italic}
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;padding:.8rem 1.2rem;border-radius:.5rem;color:#fff;font-weight:500;z-index:9999;opacity:0;transition:opacity .3s}
+.toast.show{opacity:1}
+.toast.ok{background:#16a34a}.toast.err{background:#dc2626}
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;justify-content:center;align-items:center;z-index:500;display:none}
+.modal-bg.open{display:flex}
+.modal{background:#fff;padding:2rem;border-radius:1rem;width:100%;max-width:480px;max-height:90vh;overflow-y:auto}
+.modal h3{font-size:1.15rem;font-weight:700;margin-bottom:1.25rem;color:var(--blue-dark)}
+.modal-footer{display:flex;gap:.75rem;justify-content:flex-end;margin-top:1.25rem}
+</style>
 </head>
 <body>
 
-    <!-- Login Screen -->
-    <div id="login-screen">
-        <div class="login-box">
-            <h1>PharmaManage</h1>
-            <p>Veuillez vous connecter à votre espace</p>
-            <form id="login-form">
-                <div class="input-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" value="admin@pharmacie.com" required>
-                </div>
-                <div class="input-group">
-                    <label for="password">Mot de passe</label>
-                    <input type="password" id="password" value="password" required>
-                </div>
-                <button type="submit" class="btn">Se connecter</button>
-            </form>
-        </div>
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <h1>🩺 PharmaManage</h1>
+    <p>Connectez-vous à votre espace</p>
+    <form id="login-form">
+      <div class="field"><label>Email</label><input type="email" id="email" placeholder="email@pharmacie.com" required></div>
+      <div class="field"><label>Mot de passe</label><input type="password" id="password" placeholder="••••••••" required></div>
+      <div id="login-error" style="color:#dc2626;font-size:.85rem;margin-bottom:.75rem;display:none"></div>
+      <button type="submit" class="btn btn-full">Se connecter</button>
+    </form>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <aside class="sidebar">
+    <div class="sidebar-logo">🩺 PharmaManage</div>
+    <ul class="nav-menu">
+      <li class="nav-item active" data-target="medicaments">💊 Médicaments</li>
+      <li class="nav-item" data-target="ordonnances">📝 Ordonnances</li>
+      <li class="nav-item" data-target="personnel">👨‍⚕️ Personnel</li>
+    </ul>
+    <div class="logout" id="logout-btn">🚪 Déconnexion</div>
+  </aside>
+  <main class="main">
+    <div class="top-bar">
+      <h2 id="page-title">Médicaments</h2>
+      <span id="user-label" style="font-weight:600;color:var(--green-dark)"></span>
     </div>
 
-    <!-- Dashboard -->
-    <div id="dashboard">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>🩺 PharmaManage</h2>
-            </div>
-            <ul class="nav-menu">
-                <li class="nav-item active" data-target="medicaments">💊 Médicaments</li>
-                <li class="nav-item" data-target="ordonnances">📝 Ordonnances</li>
-                <li class="nav-item" data-target="personnel">👨‍⚕️ Personnel</li>
-            </ul>
-            <div class="logout-btn" id="logout-btn">
-                🚪 Déconnexion
-            </div>
-        </aside>
+    <!-- MEDICAMENTS -->
+    <section id="medicaments" class="section active">
+      <div class="action-bar">
+        <h3>Inventaire des stocks</h3>
+        <button class="btn btn-green btn-sm" onclick="openModal('modal-med')">+ Ajouter</button>
+      </div>
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Nom Commercial</th><th>Molécule</th><th>Catégorie</th><th>Prix</th><th>Stock</th><th>Fournisseur</th><th>Ordonnance</th></tr></thead>
+        <tbody id="med-tbody"><tr><td colspan="7" class="empty">Chargement...</td></tr></tbody>
+      </table></div>
+    </section>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <header class="header">
-                <h2 id="page-title">Médicaments</h2>
-                <div class="user-profile">
-                    <span style="font-weight: 600; color: var(--sea-green-dark)">Admin Pharmacie</span>
-                </div>
-            </header>
+    <!-- ORDONNANCES -->
+    <section id="ordonnances" class="section">
+      <div class="action-bar">
+        <h3>Historique des prescriptions</h3>
+        <button class="btn btn-green btn-sm" onclick="openModal('modal-ord')">+ Saisir</button>
+      </div>
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Numéro</th><th>Patient</th><th>Médecin</th><th>Médicaments</th><th>Prix Total</th><th>Statut</th></tr></thead>
+        <tbody id="ord-tbody"><tr><td colspan="6" class="empty">Chargement...</td></tr></tbody>
+      </table></div>
+    </section>
 
-            <!-- Section Médicaments -->
-            <section id="medicaments" class="section-view active">
-                <div class="action-bar">
-                    <h3>Inventaire des Stocks</h3>
-                    <button class="btn btn-sea">+ Ajouter un médicament</button>
-                </div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nom</th>
-                                <th>Description</th>
-                                <th>Prix Unitaire</th>
-                                <th>Stock</th>
-                                <th>Statut</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Doliprane 1000mg</td>
-                                <td>Paracétamol, traitement de la douleur</td>
-                                <td>2.50 €</td>
-                                <td>145</td>
-                                <td><span class="badge success">En stock</span></td>
-                            </tr>
-                            <tr>
-                                <td>Amoxicilline 500mg</td>
-                                <td>Antibiotique à large spectre</td>
-                                <td>4.20 €</td>
-                                <td>12</td>
-                                <td><span class="badge warning">Stock faible</span></td>
-                            </tr>
-                            <tr>
-                                <td>Ibuprofène 400mg</td>
-                                <td>Anti-inflammatoire non stéroïdien</td>
-                                <td>3.10 €</td>
-                                <td>89</td>
-                                <td><span class="badge success">En stock</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+    <!-- PERSONNEL -->
+    <section id="personnel" class="section">
+      <div class="action-bar">
+        <h3>Équipe</h3>
+        <button class="btn btn-green btn-sm" onclick="openModal('modal-pers')">+ Ajouter</button>
+      </div>
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Matricule</th><th>Nom</th><th>Prénom</th><th>Poste</th><th>Téléphone</th><th>Salaire</th><th>Statut</th></tr></thead>
+        <tbody id="pers-tbody"><tr><td colspan="7" class="empty">Chargement...</td></tr></tbody>
+      </table></div>
+    </section>
+  </main>
+</div>
 
-            <!-- Section Ordonnances -->
-            <section id="ordonnances" class="section-view">
-                <div class="action-bar">
-                    <h3>Historique des prescriptions</h3>
-                    <button class="btn btn-sea">+ Saisir une ordonnance</button>
-                </div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID Ordonnance</th>
-                                <th>Patient</th>
-                                <th>Médicaments</th>
-                                <th>Prix Total</th>
-                                <th>Statut</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>#ORD-2026-0429</td>
-                                <td>jean.dupont@email.com</td>
-                                <td>Doliprane, Ibuprofène</td>
-                                <td>5.60 €</td>
-                                <td><span class="badge success">Validée</span></td>
-                            </tr>
-                            <tr>
-                                <td>#ORD-2026-0428</td>
-                                <td>marie.curie@email.com</td>
-                                <td>Amoxicilline</td>
-                                <td>4.20 €</td>
-                                <td><span class="badge warning">En attente</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Section Personnel -->
-            <section id="personnel" class="section-view">
-                <div class="action-bar">
-                    <h3>Équipe</h3>
-                    <button class="btn btn-sea">+ Ajouter un employé</button>
-                </div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nom Complet</th>
-                                <th>Rôle</th>
-                                <th>Salaire</th>
-                                <th>Contact</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Dr. Alice Martin</td>
-                                <td>Pharmacienne Titulaire</td>
-                                <td>5 200 €</td>
-                                <td>alice.m@pharmacie.com</td>
-                            </tr>
-                            <tr>
-                                <td>Luc Bernard</td>
-                                <td>Préparateur en pharmacie</td>
-                                <td>2 400 €</td>
-                                <td>luc.b@pharmacie.com</td>
-                            </tr>
-                            <tr>
-                                <td>Sophie Garnier</td>
-                                <td>Rayonniste</td>
-                                <td>1 800 €</td>
-                                <td>sophie.g@pharmacie.com</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-        </main>
+<!-- MODAL MEDICAMENT -->
+<div class="modal-bg" id="modal-med">
+  <div class="modal">
+    <h3>Ajouter un médicament</h3>
+    <div class="field"><label>Nom commercial</label><input id="m-nom" placeholder="ex: Doliprane 1000mg"></div>
+    <div class="field"><label>Molécule active</label><input id="m-mol" placeholder="ex: Paracétamol"></div>
+    <div class="field"><label>Catégorie</label><input id="m-cat" placeholder="ex: Antalgique"></div>
+    <div class="field"><label>Prix unitaire (€)</label><input id="m-prix" type="number" step="0.01" placeholder="0.00"></div>
+    <div class="field"><label>Quantité en stock</label><input id="m-stock" type="number" placeholder="0"></div>
+    <div class="field"><label>Fournisseur</label><input id="m-fourn" placeholder="ex: Sanofi"></div>
+    <div class="field"><label>Date d'expiration</label><input id="m-date" type="date"></div>
+    <div class="field"><label>Sur ordonnance</label>
+      <select id="m-ord"><option value="false">Non</option><option value="true">Oui</option></select>
     </div>
+    <div class="modal-footer">
+      <button class="btn" style="background:#6b7280" onclick="closeModal('modal-med')">Annuler</button>
+      <button class="btn btn-green" onclick="ajouterMedicament()">Enregistrer</button>
+    </div>
+  </div>
+</div>
 
-    <script>
-        // DOM Elements
-        const loginScreen = document.getElementById('login-screen');
-        const dashboard = document.getElementById('dashboard');
-        const loginForm = document.getElementById('login-form');
-        const logoutBtn = document.getElementById('logout-btn');
-        const navItems = document.querySelectorAll('.nav-item');
-        const sectionViews = document.querySelectorAll('.section-view');
-        const pageTitle = document.getElementById('page-title');
+<!-- MODAL ORDONNANCE -->
+<div class="modal-bg" id="modal-ord">
+  <div class="modal">
+    <h3>Saisir une ordonnance</h3>
+    <div class="field"><label>Numéro ordonnance</label><input id="o-num" placeholder="ex: ORD-2026-001"></div>
+    <div class="field"><label>Nom patient</label><input id="o-patient" placeholder="Nom complet"></div>
+    <div class="field"><label>Email patient</label><input id="o-email" type="email" placeholder="patient@email.com"></div>
+    <div class="field"><label>Nom médecin</label><input id="o-medecin" placeholder="Dr. Nom"></div>
+    <div class="field"><label>Statut</label>
+      <select id="o-statut"><option>En attente</option><option>Validée</option><option>Refusée</option></select>
+    </div>
+    <div class="field"><label>Médicaments (nom:quantité, séparés par virgule)</label>
+      <input id="o-meds" placeholder="ex: Doliprane 1000mg:2, Amoxicilline 500mg:1">
+    </div>
+    <div class="modal-footer">
+      <button class="btn" style="background:#6b7280" onclick="closeModal('modal-ord')">Annuler</button>
+      <button class="btn btn-green" onclick="ajouterOrdonnance()">Enregistrer</button>
+    </div>
+  </div>
+</div>
 
-        // Logic : Login
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            // Simuler la validation (Service Vue statique sans backend)
-            const email = document.getElementById('email').value;
-            if(email) {
-                // Masquer le formulaire de connexion avec un effet
-                loginScreen.style.opacity = '0';
-                setTimeout(() => {
-                    loginScreen.style.display = 'none';
-                    dashboard.style.display = 'flex';
-                }, 300);
-            }
-        });
+<!-- MODAL PERSONNEL -->
+<div class="modal-bg" id="modal-pers">
+  <div class="modal">
+    <h3>Ajouter un employé</h3>
+    <div class="field"><label>Matricule</label><input id="p-mat" placeholder="ex: EMP-001"></div>
+    <div class="field"><label>Nom</label><input id="p-nom" placeholder="Nom de famille"></div>
+    <div class="field"><label>Prénom</label><input id="p-prenom" placeholder="Prénom"></div>
+    <div class="field"><label>Poste</label><input id="p-poste" placeholder="ex: Pharmacien"></div>
+    <div class="field"><label>Téléphone</label><input id="p-tel" placeholder="ex: 0601020304"></div>
+    <div class="field"><label>Salaire mensuel (€)</label><input id="p-sal" type="number" placeholder="0"></div>
+    <div class="field"><label>Date d'embauche</label><input id="p-date" type="date"></div>
+    <div class="field"><label>Actif</label>
+      <select id="p-actif"><option value="true">Oui</option><option value="false">Non</option></select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" style="background:#6b7280" onclick="closeModal('modal-pers')">Annuler</button>
+      <button class="btn btn-green" onclick="ajouterPersonnel()">Enregistrer</button>
+    </div>
+  </div>
+</div>
 
-        // Logic : Logout
-        logoutBtn.addEventListener('click', () => {
-            dashboard.style.display = 'none';
-            loginScreen.style.display = 'flex';
-            setTimeout(() => {
-                loginScreen.style.opacity = '1';
-            }, 10);
-        });
+<div class="toast" id="toast"></div>
 
-        // Logic : Navigation Sidebar
-        navItems.forEach(item => {
-            item.addEventListener('click', () => {
-                // Remove active class from all nav items
-                navItems.forEach(nav => nav.classList.remove('active'));
-                
-                // Add active class to clicked item
-                item.classList.add('active');
+<script>
+const API = { auth: 'http://localhost:5002', med: 'http://localhost:5000', ord: 'http://localhost:5001', pers: 'http://localhost:5003' };
+let token = '';
 
-                // Get target section id
-                const targetId = item.getAttribute('data-target');
+// --- Toast ---
+function toast(msg, ok=true) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + (ok?'ok':'err');
+  setTimeout(() => t.className='toast', 3000);
+}
 
-                // Hide all sections
-                sectionViews.forEach(section => section.classList.remove('active'));
+// --- Modal ---
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-                // Show target section
-                const targetSection = document.getElementById(targetId);
-                targetSection.classList.add('active');
+// --- Login ---
+document.getElementById('login-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = document.getElementById('email').value;
+  const mot_de_passe = document.getElementById('password').value;
+  const errEl = document.getElementById('login-error');
+  errEl.style.display = 'none';
+  try {
+    const res = await fetch(API.auth+'/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email, mot_de_passe}) });
+    const data = await res.json();
+    if (data.token) {
+      token = data.token;
+      document.getElementById('user-label').textContent = email;
+      document.getElementById('login-screen').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'flex';
+        loadMedicaments(); loadOrdonnances(); loadPersonnel();
+      }, 300);
+    } else {
+      errEl.textContent = data.message || 'Identifiants incorrects'; errEl.style.display='block';
+    }
+  } catch(err) { errEl.textContent = 'Impossible de contacter le serveur'; errEl.style.display='block'; }
+});
 
-                // Update Title (Remove emoji for clean title)
-                pageTitle.textContent = item.textContent.replace(/[^\w\s\u00C0-\u017F]/g, '').trim();
-            });
-        });
-    </script>
+// --- Logout ---
+document.getElementById('logout-btn').addEventListener('click', () => {
+  token=''; document.getElementById('dashboard').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  setTimeout(()=>document.getElementById('login-screen').style.opacity='1',10);
+});
+
+// --- Navigation ---
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    item.classList.add('active');
+    document.getElementById(item.dataset.target).classList.add('active');
+    document.getElementById('page-title').textContent = item.textContent.replace(/[^\w\s\u00C0-\u017F]/g,'').trim();
+  });
+});
+
+// --- MEDICAMENTS ---
+async function loadMedicaments() {
+  const tbody = document.getElementById('med-tbody');
+  try {
+    const res = await fetch(API.med+'/medicament/liste');
+    const data = await res.json();
+    if (!data.length) { tbody.innerHTML='<tr><td colspan="7" class="empty">Aucun médicament</td></tr>'; return; }
+    tbody.innerHTML = data.map(m => `
+      <tr>
+        <td>${m.nom_commercial||'-'}</td>
+        <td>${m.molecule_active||'-'}</td>
+        <td>${m.categorie||'-'}</td>
+        <td>${m.prix_unitaire!=null?m.prix_unitaire+' €':'-'}</td>
+        <td>${m.quantite_stock!=null?m.quantite_stock:'-'}</td>
+        <td>${m.fournisseur||'-'}</td>
+        <td>${m.sur_ordonnance?'<span class="badge badge-warn">Oui</span>':'<span class="badge badge-ok">Non</span>'}</td>
+      </tr>`).join('');
+  } catch(e) { tbody.innerHTML='<tr><td colspan="7" class="empty">Erreur de chargement</td></tr>'; }
+}
+
+async function ajouterMedicament() {
+  const body = {
+    nom_commercial: document.getElementById('m-nom').value,
+    molecule_active: document.getElementById('m-mol').value,
+    categorie: document.getElementById('m-cat').value,
+    prix_unitaire: parseFloat(document.getElementById('m-prix').value),
+    quantite_stock: parseInt(document.getElementById('m-stock').value),
+    fournisseur: document.getElementById('m-fourn').value,
+    date_expiration: document.getElementById('m-date').value,
+    sur_ordonnance: document.getElementById('m-ord').value === 'true'
+  };
+  try {
+    const res = await fetch(API.med+'/medicament/ajouter', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    if (res.ok) { toast('Médicament ajouté !'); closeModal('modal-med'); loadMedicaments(); }
+    else { const d=await res.json(); toast(d.error||'Erreur', false); }
+  } catch(e) { toast('Erreur serveur', false); }
+}
+
+// --- ORDONNANCES ---
+async function loadOrdonnances() {
+  const tbody = document.getElementById('ord-tbody');
+  try {
+    const res = await fetch(API.ord+'/ordonance/liste');
+    const data = await res.json();
+    if (!data.length) { tbody.innerHTML='<tr><td colspan="6" class="empty">Aucune ordonnance</td></tr>'; return; }
+    tbody.innerHTML = data.map(o => {
+      const meds = Array.isArray(o.medicaments_prescrits) ? o.medicaments_prescrits.map(m=>m.nom_medicament).join(', ') : '-';
+      const cls = o.statut==='Validée'?'badge-ok':o.statut==='Refusée'?'badge-red':'badge-warn';
+      return `<tr>
+        <td>${o.numero_ordonnance||'-'}</td>
+        <td>${o.nom_patient||'-'} <small style="color:var(--muted)">${o.email_patient||''}</small></td>
+        <td>${o.nom_medecin||'-'}</td>
+        <td>${meds}</td>
+        <td>${o.prix_total!=null?o.prix_total.toFixed(2)+' €':'-'}</td>
+        <td><span class="badge ${cls}">${o.statut||'-'}</span></td>
+      </tr>`;
+    }).join('');
+  } catch(e) { tbody.innerHTML='<tr><td colspan="6" class="empty">Erreur de chargement</td></tr>'; }
+}
+
+async function ajouterOrdonnance() {
+  const medsRaw = document.getElementById('o-meds').value;
+  const medicaments_prescrits = medsRaw.split(',').map(s => {
+    const [nom, qty] = s.trim().split(':');
+    return { nom_medicament: nom.trim(), quantite: parseInt(qty)||1 };
+  });
+  const body = {
+    numero_ordonnance: document.getElementById('o-num').value,
+    nom_patient: document.getElementById('o-patient').value,
+    email_patient: document.getElementById('o-email').value,
+    nom_medecin: document.getElementById('o-medecin').value,
+    statut: document.getElementById('o-statut').value,
+    medicaments_prescrits
+  };
+  try {
+    const res = await fetch(API.ord+'/ordonance/ajouter', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer ' + token}, body: JSON.stringify(body) });
+    if (res.ok) { toast('Ordonnance ajoutée !'); closeModal('modal-ord'); loadOrdonnances(); }
+    else { const d=await res.json(); toast(d.error||'Erreur', false); }
+  } catch(e) { toast('Erreur serveur', false); }
+}
+
+// --- PERSONNEL ---
+async function loadPersonnel() {
+  const tbody = document.getElementById('pers-tbody');
+  try {
+    const res = await fetch(API.pers+'/personnel/liste');
+    const data = await res.json();
+    if (!data.length) { tbody.innerHTML='<tr><td colspan="7" class="empty">Aucun employé</td></tr>'; return; }
+    tbody.innerHTML = data.map(p => `
+      <tr>
+        <td>${p.matricule||'-'}</td>
+        <td>${p.nom||'-'}</td>
+        <td>${p.prenom||'-'}</td>
+        <td>${p.poste||'-'}</td>
+        <td>${p.telephone||'-'}</td>
+        <td>${p.salaire_mensuel!=null?p.salaire_mensuel+' €':'-'}</td>
+        <td>${p.est_actif?'<span class="badge badge-ok">Actif</span>':'<span class="badge badge-red">Inactif</span>'}</td>
+      </tr>`).join('');
+  } catch(e) { tbody.innerHTML='<tr><td colspan="7" class="empty">Erreur de chargement</td></tr>'; }
+}
+
+async function ajouterPersonnel() {
+  const body = {
+    matricule: document.getElementById('p-mat').value,
+    nom: document.getElementById('p-nom').value,
+    prenom: document.getElementById('p-prenom').value,
+    poste: document.getElementById('p-poste').value,
+    telephone: document.getElementById('p-tel').value,
+    salaire_mensuel: parseFloat(document.getElementById('p-sal').value),
+    date_embauche: document.getElementById('p-date').value,
+    est_actif: document.getElementById('p-actif').value === 'true'
+  };
+  try {
+    const res = await fetch(API.pers+'/personnel/ajouter', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    if (res.ok) { toast('Employé ajouté !'); closeModal('modal-pers'); loadPersonnel(); }
+    else { const d=await res.json(); toast(d.error||'Erreur', false); }
+  } catch(e) { toast('Erreur serveur', false); }
+}
+</script>
 </body>
 </html>

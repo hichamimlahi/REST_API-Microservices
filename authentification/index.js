@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT_ONE || 4002;
 const mongoose = require("mongoose");
@@ -15,6 +16,7 @@ mongoose.connect("mongodb://db:27017/db_authentification")
         console.error(err);
     });
 
+app.use(cors());
 app.use(express.json());
 
 app.post("/auth/register", async (req, res) => {
