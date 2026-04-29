@@ -1,0 +1,16 @@
+{
+  "name": "ordonance-service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.3",
+    "axios": "^1.7.9",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^9.4.1",
+    "nodemon": "^3.1.14"
+  }
+}

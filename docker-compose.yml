@@ -1,0 +1,64 @@
+version: '3.9'
+services:
+  db:
+    container_name: db
+    image: mongo
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  medicament:
+    build: ./medicament
+    container_name: medicament-service
+    ports:
+      - "5000:4000"
+    volumes:
+      - /app/node_modules
+    depends_on:
+      - db
+  authentification:
+    build: ./authentification
+    container_name: auth-service
+    ports:
+      - "5002:4002"
+    volumes:
+      - /app/node_modules
+    depends_on:
+      - db
+  ordonance:
+    build: ./ordonance
+    container_name: ordonance-service
+    ports:
+      - "5001:4001"
+    volumes:
+      - /app/node_modules
+    depends_on:
+      - authentification
+      - medicament
+      - db
+      - rabbitmq
+  personnel:
+    build: ./personnel
+    container_name: personnel-service
+    ports:
+      - "5003:4003"
+    volumes:
+      - /app/node_modules
+    depends_on:
+      - db
+  notification:
+    build: ./notification
+    container_name: notification-service
+    volumes:
+      - /app/node_modules
+    depends_on:
+      - rabbitmq
+
+volumes:
+  mongo_data:
